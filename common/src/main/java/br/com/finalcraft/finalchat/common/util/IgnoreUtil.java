@@ -1,7 +1,7 @@
 package br.com.finalcraft.finalchat.common.util;
 
 import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.config.ConfigManager;
 import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannel;
 
@@ -56,7 +56,7 @@ public class IgnoreUtil {
             return ignoreSource.isIgnoring(player, otherPlayer);
         } catch (Throwable t) { // a broken bridge must not swallow the whole chat line
             clearSource();
-            FinalChatBootstrap.get().getLog().warning("The installed ignore source failed and was dropped; "
+            FinalChat.get().getLog().warning("The installed ignore source failed and was dropped; "
                     + "falling back to FinalChat's own list until the next reload. {}", t);
             return isIgnoring(player.getName(), otherPlayer.getName());
         }

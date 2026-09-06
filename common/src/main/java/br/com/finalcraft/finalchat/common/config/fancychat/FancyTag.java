@@ -2,7 +2,7 @@ package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 import java.util.HashMap;
@@ -35,11 +35,11 @@ public class FancyTag {
                 FancyTag fancyTag = new FancyTag(fancyTagName);
                 mapOfFancyTags.put(fancyTagName, fancyTag);
             } catch (Exception e) {
-                FinalChatBootstrap.get().getLog().warning("Could not read the FancyTag [{}]: {}", fancyTagName, e.getMessage());
+                FinalChat.get().getLog().warning("Could not read the FancyTag [{}]: {}", fancyTagName, e.getMessage());
             }
         }
 
-        FinalChatBootstrap.get().getLog().info("Finished loading {} FancyTags!", mapOfFancyTags.size());
+        FinalChat.get().getLog().info("Finished loading {} FancyTags!", mapOfFancyTags.size());
     }
 
     public FancyTag(String name) {

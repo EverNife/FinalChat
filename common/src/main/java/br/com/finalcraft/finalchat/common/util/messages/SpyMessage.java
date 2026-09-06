@@ -5,7 +5,7 @@ import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.fancytext.FancyFormatter;
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,7 +58,7 @@ public class SpyMessage {
             plainPieces.add(FCColorUtil.stripColor(fancyText.getText()));
         }
 
-        FinalChatBootstrap.chatLog(String.join("", plainPieces));
+        FinalChat.chatLog(String.join("", plainPieces));
 
         for (Map.Entry<UUID, String> entry : spyingPlayers.entrySet()) {
             if (allPlayerWhoHeardUUIDs.contains(entry.getKey())) {

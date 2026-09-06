@@ -4,7 +4,7 @@ import br.com.finalcraft.evernifecore.config.ConfigFactory;
 import br.com.finalcraft.evernifecore.ecplugin.ECPluginData;
 import br.com.finalcraft.evernifecore.locale.FCLocaleManager;
 import br.com.finalcraft.everyconfig.config.Config;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.commands.CMDMuteAll;
 import br.com.finalcraft.finalchat.common.commands.CMDTell;
 import br.com.finalcraft.finalchat.common.commands.CoreCommand;
@@ -68,7 +68,7 @@ public class ConfigManager {
         try {
             IgnoreUtil.initialize();            //Read the ignore lists
         } catch (Exception e) {
-            FinalChatBootstrap.get().getLog().warning("Could not read the ignore lists from DataStore.yml. {}", e);
+            FinalChat.get().getLog().warning("Could not read the ignore lists from DataStore.yml. {}", e);
         }
     }
 

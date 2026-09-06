@@ -2,11 +2,11 @@ package br.com.finalcraft.finalchat.hytale;
 
 import br.com.finalcraft.evernifecore.ecplugin.annotations.ECPlugin;
 import br.com.finalcraft.evernifecore.hytale.ecplugin.ECHytalePlugin;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 
 /**
- * Hytale entry point. Everything it runs comes from {@link FinalChatBootstrap}: the configurable
+ * Hytale entry point. Everything it runs comes from {@link FinalChat}: the configurable
  * private message ({@code /ftell}, {@code /reply}) with its TellTag format, hover and staff spy,
  * plus the channel commands, all of which speak only the agnostic API.
  *
@@ -16,7 +16,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
  * inert until that door exists.</p>
  */
 @ECPlugin
-public class FinalChatHytalePlugin extends ECHytalePlugin implements FinalChatBootstrap {
+public class FinalChatHytalePlugin extends ECHytalePlugin implements FinalChat {
 
     public FinalChatHytalePlugin(JavaPluginInit init) {
         super(init);

@@ -1,7 +1,7 @@
 package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.commands.finalcmd.FinalCMDManager;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 import java.util.Collection;
@@ -43,11 +43,11 @@ public class FancyChannelController {
         }
 
         if (GLOBAL_CHANNEL == null || DEFAULT_CHANNEL == null) {
-            FinalChatBootstrap.get().getLog().warning("Settings.globalChannelName / Settings.defaultChannelName "
+            FinalChat.get().getLog().warning("Settings.globalChannelName / Settings.defaultChannelName "
                     + "point to a channel that has no ChannelFormats block - fix config.yml and reload.");
         }
 
-        FinalChatBootstrap.get().getLog().info("Finished loading {} FancyChannels!", mapOfFancyChannels.size());
+        FinalChat.get().getLog().info("Finished loading {} FancyChannels!", mapOfFancyChannels.size());
     }
 
     public static Collection<FancyChannel> getAllChannels() {

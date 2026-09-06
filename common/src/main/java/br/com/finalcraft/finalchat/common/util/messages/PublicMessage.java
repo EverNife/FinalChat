@@ -6,7 +6,7 @@ import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.fancytext.FancyFormatter;
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.PermissionNodes;
 import br.com.finalcraft.finalchat.common.api.FinalChatSendChannelMessageEvent;
 import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannel;
@@ -60,7 +60,7 @@ public class PublicMessage {
             if (!fancyTag.getPlaceholderCondition().isEmpty()) {
                 String[] placeholderToCondition = fancyTag.getPlaceholderCondition().split("\\|", 2);
                 if (placeholderToCondition.length != 2) {
-                    FinalChatBootstrap.get().getLog().warning("Could not read the placeholderCondition [{}] of tag [{}] "
+                    FinalChat.get().getLog().warning("Could not read the placeholderCondition [{}] of tag [{}] "
                             + "on channel [{}] - it must be two placeholders separated by a '|'.",
                             fancyTag.getPlaceholderCondition(), fancyTag.getName(), channel.getName());
                     continue;
@@ -113,7 +113,7 @@ public class PublicMessage {
             }
         }
 
-        FinalChatBootstrap.chatLog(FancyTextUtil.textOnly(textChatList));
+        FinalChat.chatLog(FancyTextUtil.textOnly(textChatList));
     }
 
     public static void doTheDeploy(final List<FancyText> textChatList, FPlayer player, FPlayer onlinePlayerToSendMessage, int finalIdOfMSGText) {

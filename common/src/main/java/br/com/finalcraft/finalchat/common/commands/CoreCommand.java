@@ -9,7 +9,7 @@ import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.PermissionNodes;
 import br.com.finalcraft.finalchat.common.util.messages.SpyMessage;
 
@@ -65,6 +65,6 @@ public class CoreCommand {
             permission = PermissionNodes.COMMAND_RELOAD
     )
     public void reload(FCommandSender sender) {
-        ECPluginManager.reloadPlugin(sender, FinalChatBootstrap.get().getPluginData());
+        ECPluginManager.reloadPlugin(sender, FinalChat.get().getPluginData());
     }
 }

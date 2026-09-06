@@ -14,7 +14,7 @@ import java.util.UUID;
  * {@code FancyPlayerData} parameter and get the caller's own, and what sibling plugins reach for
  * to redirect a player's next message.
  *
- * <p>Registered as RESIDENT (see {@code FinalChatBootstrap}): a released cell would come back blank
+ * <p>Registered as RESIDENT (see {@code FinalChat}): a released cell would come back blank
  * and silently drop the channel the player locked mid-session.</p>
  */
 public class FancyPlayerData extends PDSection {

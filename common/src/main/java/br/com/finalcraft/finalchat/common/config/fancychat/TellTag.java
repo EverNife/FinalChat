@@ -2,7 +2,7 @@ package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 public class TellTag {
@@ -20,7 +20,7 @@ public class TellTag {
 
     public static void initialize(){
         TELL_TAG = new TellTag();
-        FinalChatBootstrap.get().getLog().info("Finished loading the TellTag!");
+        FinalChat.get().getLog().info("Finished loading the TellTag!");
     }
 
     public TellTag(){

@@ -23,12 +23,12 @@ import br.com.finalcraft.finalchat.common.util.messages.SpyMessage;
  * Each platform main class implements this on top of its platform base class and adds its own
  * extras in {@code onECPluginEnablePost()}.
  */
-public interface FinalChatBootstrap extends IECPluginBootstrap {
+public interface FinalChat extends IECPluginBootstrap {
 
-    ECBootstrap<FinalChatBootstrap> INSTANCE = ECBootstrap.of(FinalChatBootstrap.class);
+    ECBootstrap<FinalChat> INSTANCE = ECBootstrap.of(FinalChat.class);
 
     /** The plugin running on this server, whatever the platform, or {@code null} while there is none. */
-    static FinalChatBootstrap get() {
+    static FinalChat get() {
         return INSTANCE.get();
     }
 

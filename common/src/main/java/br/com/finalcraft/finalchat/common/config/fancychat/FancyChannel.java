@@ -1,7 +1,7 @@
 package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
-import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.FinalChat;
 import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class FancyChannel {
         for (String tagName : tag_builder.split(",")) {
             FancyTag fancyTag = FancyTag.mapOfFancyTags.getOrDefault(tagName, null);
             if (fancyTag == null) {
-                FinalChatBootstrap.get().getLog().warning("Channel [{}] lists a FancyTag named [{}] that does not exist.", name, tagName);
+                FinalChat.get().getLog().warning("Channel [{}] lists a FancyTag named [{}] that does not exist.", name, tagName);
             } else {
                 tagsFromThisBuilder.add(fancyTag);
             }
