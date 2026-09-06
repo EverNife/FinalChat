@@ -1,0 +1,22 @@
+{
+  "Group": "br.com.finalcraft",
+  "Name": "FinalChat",
+  "Version": "${version}",
+  "Description": "Channel-based chat with configurable clickable tags (Hytale module)",
+  "Authors": [
+    {
+      "Name": "EverNife"
+    }
+  ],
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Hytale:EntityModule": "*",
+    "EverNife:EverNifeCore": "*"
+  },
+  "OptionalDependencies": {
+    "HelpChat:PlaceholderAPI": "*"
+  },
+  "DisabledByDefault": false,
+  "Main": "br.com.finalcraft.finalchat.hytale.FinalChatHytalePlugin",
+  "IncludesAssetPack": false
+}

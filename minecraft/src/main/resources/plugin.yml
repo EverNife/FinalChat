@@ -1,0 +1,8 @@
+name: FinalChat
+version: ${version}
+author: EverNife
+description: Channel-based chat with configurable clickable tags (Bukkit module)
+main: br.com.finalcraft.finalchat.minecraft.FinalChatBukkitPlugin
+api-version: 1.13
+depend: [ EverNifeCore ]
+softdepend: [ PlaceholderAPI, Essentials ]

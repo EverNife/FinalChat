@@ -1,68 +1,66 @@
-apply plugin: 'java'
-apply plugin: 'maven-publish'
+subprojects {
+    apply plugin: 'java'
 
-group 'br.com.finalcraft'
-version '1.0.8'
+    group = 'br.com.finalcraft'
+    version = '2.0.0'
 
-sourceCompatibility = 1.8
-
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-repositories {
-    flatDir {
-        dirs 'libs'
+    // One toolchain for the whole build: launch Gradle with JDK 25. This toolchain compiles/runs
+    // everything EXCEPT the dual-target compileJava override below, where :common and :minecraft
+    // emit Java 8 bytecode.
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
     }
-    mavenCentral()
-    maven {
-        name = 'spigotmc-repo'
-        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
-    }
-    maven {
-        url = 'https://maven.petrus.dev/public'
-    }
-}
 
-dependencies {
-
-    compileOnly 'br.com.finalcraft:EverNifeCore:2.0.4'
-
-    compileOnly name: "EssentialsX-2.15.0.evernife.v1b"
-    compileOnly name: "MambaFactions"
-    compileOnly name: "MambaMassiveCore"
-
-    compileOnly 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
-
-    compileOnly 'org.jetbrains:annotations:16.0.2'
-}
-
-publishing {
     repositories {
-        maven {
-            name = "PetrusRepo"
-            url = "https://maven.petrus.dev/public"
-            credentials {
-                username = System.env.PETRUSMAVEN_ACTOR
-                password = System.env.PETRUSMAVEN_TOKEN
-            }
-            authentication {
-                basic(BasicAuthentication)
+        mavenLocal() // EverNifeCore artifacts published here via :<module>:publishToMavenLocal
+        mavenCentral()
+        maven { url = 'https://maven.petrus.dev/public' }
+        maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+    }
+
+    dependencies {
+        // Provided (canonical, not relocated) by EverNifeCore at runtime. Declared here only to
+        // silence "unknown enum constant Visibility.*" warnings from PDSection's @JsonAutoDetect.
+        compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.15.4'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        // EverNifeCore reads command parameter names through reflection.
+        options.compilerArgs.add('-parameters')
+    }
+
+    // Lets the Java-8-bytecode modules still RESOLVE a dependency published for a newer JVM.
+    // Gradle 9 forbids attributes on declarable-only buckets, so only the resolvable/consumable
+    // ones are tagged. Same override EverNifeCore's own build carries, for the same reason.
+    configurations.configureEach {
+        if (canBeResolved || canBeConsumed) {
+            attributes {
+                attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 25)
             }
         }
     }
-    publications {
-        petrus(MavenPublication) {
-            groupId = project.group
-            from(components.java)
-            pom.withXml {
-                asNode().appendNode('url','https://petrus.dev')
-                asNode().dependencies.'*'.each() {
-                    it.parent().remove(it) //Remove all dependencies from pom file
-                }
-            }
-        }
+}
+
+// ======================================================================
+//  Dual-target: modern Java source syntax -> Java 8 bytecode (:common, :minecraft)
+//
+//  These modules are written in modern Java syntax but must run on a Java 8 JVM (broad
+//  Minecraft-server compatibility). The FinalCraft Jabel fork (an annotation processor) lifts
+//  javac's source-level check so the Java 25 compiler can emit Java 8 bytecode, while
+//  `options.release = 8` keeps the *API* floor honest - no Java 9+ library APIs, which would
+//  compile fine yet crash on an old server.
+//
+//  :hytale is intentionally NOT here: it compiles to Java 25 with the main toolchain.
+// ======================================================================
+configure([project(':common'), project(':minecraft')]) {
+    dependencies {
+        annotationProcessor libs.jabel
+        compileOnly libs.jabel
+    }
+
+    compileJava {
+        sourceCompatibility = 25 // modern *syntax* (IDE hint; Jabel lifts javac's source check)
+        options.release = 8      // Java 8 *bytecode* and *API* floor
     }
 }

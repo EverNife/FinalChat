@@ -1,2 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'FinalChat'
 
+include 'common'
+include 'minecraft'
+include 'hytale'

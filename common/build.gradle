@@ -1,0 +1,55 @@
+// Platform-agnostic module: channels, tags, the message pipeline, config, locale, player data and
+// every command that does not touch a server-specific API. It must NEVER import Bukkit or Hytale
+// types - only the EverNifeCore platform-agnostic API.
+//
+// This is also the PUBLISHED module: FancyChannel, ThirdPartTagsParser, FancyPlayerData,
+// ChannelManager, FinalChatApi and FinalChatSendChannelMessageEvent all live here, and sibling
+// plugins extend/consume them.
+//
+// Toolchain / dual-target (modern syntax -> Java 8 bytecode) is configured in the root build.
+
+apply plugin: 'maven-publish'
+
+dependencies {
+    // The shared EverNifeCore API, compiled against the RELOCATED view so Jackson resolves to the
+    // same names the deployed core carries at runtime. Provided at runtime by the core.
+    compileOnly 'br.com.finalcraft:evernifecore-common-relocated:3.0.1'
+
+    // Compile-time-only stubs for classes each platform ships for real under the same name (the
+    // "platoverride" pattern). FinalChatSendChannelMessageEvent needs them: the agnostic base
+    // ECEvent has no agnostic implementation, so `extends ECEvent implements IECEvent` compiles
+    // against the stub and links against the platform's real class at runtime. Never packaged.
+    compileOnly 'br.com.finalcraft:evernifecore-api-contracts:3.0.1'
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "PetrusRepo"
+            url = "https://maven.petrus.dev/public"
+            credentials {
+                username = System.env.PETRUSMAVEN_ACTOR
+                password = System.env.PETRUSMAVEN_TOKEN
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+    publications {
+        petrus(MavenPublication) {
+            groupId = project.group
+            // Written by hand ON PURPOSE: publishing a module defaults the artifactId to the
+            // MODULE name ("common"), and four sibling repositories resolve this by the
+            // historical coordinate br.com.finalcraft:FinalChat.
+            artifactId = 'FinalChat'
+            from(components.java)
+            pom.withXml {
+                asNode().appendNode('url', 'https://petrus.dev')
+                asNode().dependencies.'*'.each() {
+                    it.parent().remove(it) //Remove all dependencies from pom file
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,0 @@
-name: FinalChat
-version: 1.0.8
-author: EverNife
-main: br.com.finalcraft.finalchat.FinalChat
-depend: [ EverNifeCore ]
-softdepend: [ PlaceholderAPI, Factions, Essentials ]
-api-version: 1.13

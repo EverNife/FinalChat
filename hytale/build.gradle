@@ -1,0 +1,45 @@
+plugins {
+    alias(libs.plugins.shadow)
+}
+
+// Hytale compiles to plain Java 25 with the main toolchain (root build.gradle); it is NOT in the
+// dual-target Java-8 list.
+
+repositories {
+    maven {
+        name = 'hytale'
+        url = 'https://maven.hytale.com/release'
+    }
+}
+
+dependencies {
+    implementation project(':common')
+
+    // Hytale platform API. The published evernifecore-hytale jar is thin (the shared API ships as
+    // a separate artifact), so evernifecore-common is added explicitly alongside it.
+    compileOnly 'br.com.finalcraft:evernifecore-hytale:3.0.1'
+    compileOnly 'br.com.finalcraft:evernifecore-common:3.0.1'
+
+    // Hytale Server API (from maven.hytale.com). Floating version, mirroring EverNifeCore.
+    compileOnly 'com.hypixel.hytale:Server:+'
+}
+
+shadowJar {
+    archiveBaseName.set('FinalChat')
+    archiveClassifier.set('Hytale')
+}
+
+// Only the shaded jar is deployable; drop the thin jar (it lacks :common) to avoid confusion.
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('shadowJar')
+}
+
+processResources {
+    filesMatching('manifest.json') {
+        expand version: project.version
+    }
+}
