@@ -1,32 +1,29 @@
-package br.com.finalcraft.finalchat.util;
+package br.com.finalcraft.finalchat.common.util;
 
-import br.com.finalcraft.finalchat.config.fancychat.FancyChannel;
-import br.com.finalcraft.finalchat.config.fancychat.FancyChannelController;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import br.com.finalcraft.evernifecore.EverNifeCore;
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
+import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannel;
+import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannelController;
 
 public class ChannelManager {
 
-    public static void refresh(){
-        for (Player player : Bukkit.getOnlinePlayers()){
-            for (FancyChannel fancyChannel : FancyChannelController.getAllChannels()){
-                if (fancyChannel.getPermission().isEmpty() || player.hasPermission(fancyChannel.getPermission())){
-                    fancyChannel.addMember(player);
-                }
-            }
+    /** Re-seats every online player into the channels they are allowed on. Called after a reload. */
+    public static void refresh() {
+        for (FPlayer player : EverNifeCore.getPlatform().getOnlinePlayers()) {
+            playerJoined(player);
         }
     }
 
-    public static void playerJoined(Player player){
-        for (FancyChannel fancyChannel : FancyChannelController.getAllChannels()){
-            if (fancyChannel.getPermission().isEmpty() || player.hasPermission(fancyChannel.getPermission())){
+    public static void playerJoined(FPlayer player) {
+        for (FancyChannel fancyChannel : FancyChannelController.getAllChannels()) {
+            if (fancyChannel.getPermission().isEmpty() || player.hasPermission(fancyChannel.getPermission())) {
                 fancyChannel.addMember(player);
             }
         }
     }
 
-    public static void playerLeaved(Player player){
-        for (FancyChannel fancyChannel : FancyChannelController.getAllChannels()){
+    public static void playerLeaved(FPlayer player) {
+        for (FancyChannel fancyChannel : FancyChannelController.getAllChannels()) {
             fancyChannel.removeMember(player);
         }
     }

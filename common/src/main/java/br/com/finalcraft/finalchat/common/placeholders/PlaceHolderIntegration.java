@@ -1,18 +1,17 @@
-package br.com.finalcraft.finalchat.placeholders;
+package br.com.finalcraft.finalchat.common.placeholders;
 
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.integration.placeholders.PAPIIntegration;
-import org.bukkit.entity.Player;
 
-public class PlaceHolderIntegration{
+public class PlaceHolderIntegration {
 
-    public static boolean hasPlaceholderApi = false;
-    public static String parsePlaceholder(String text, Player player){
-        text = text.replace("{player}",player.getName()).replace("{playername}",player.getName());
-        return PAPIIntegration.parse(player,text);
-    }
-
-    public static void initialize(){
-        hasPlaceholderApi = true;
+    /**
+     * Resolves the two name tokens FinalChat owns and then hands the text to PlaceholderAPI.
+     * Degrades on its own where PlaceholderAPI is absent - the text comes back untouched.
+     */
+    public static String parsePlaceholder(String text, FPlayer player) {
+        text = text.replace("{player}", player.getName()).replace("{playername}", player.getName());
+        return PAPIIntegration.parse(player, text);
     }
 
 }

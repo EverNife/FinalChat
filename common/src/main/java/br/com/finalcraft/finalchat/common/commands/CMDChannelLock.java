@@ -1,27 +1,30 @@
-package br.com.finalcraft.finalchat.commands;
+package br.com.finalcraft.finalchat.common.commands;
 
 
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
-import br.com.finalcraft.evernifecore.util.FCBukkitUtil;
-import br.com.finalcraft.finalchat.config.data.FancyPlayerData;
-import br.com.finalcraft.finalchat.config.fancychat.FancyChannel;
-import org.bukkit.entity.Player;
+import br.com.finalcraft.evernifecore.util.FCMessageUtil;
+import br.com.finalcraft.finalchat.common.config.data.FancyPlayerData;
+import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannel;
+import br.com.finalcraft.finalchat.common.messages.FChatMessages;
 
 public class CMDChannelLock {
 
     @FinalCMD(
             aliases = {"channellock", "ch", "channel", "lock"}
     )
-    public void lockChannel(Player player, FancyPlayerData playerData, @Arg(name = "<Channel>") FancyChannel fancyChannel){
+    public void lockChannel(FPlayer player, FancyPlayerData playerData, @Arg("<Channel>") FancyChannel fancyChannel) {
 
         if (!fancyChannel.getPermission().isEmpty() &&
-                !FCBukkitUtil.hasThePermission(player,fancyChannel.getPermission())){
+                !FCMessageUtil.hasThePermission(player, fancyChannel.getPermission())) {
             return;
         }
 
         playerData.setLockChannel(fancyChannel);
 
-        player.sendMessage("§6§l ▶ §aCanal §e[" + fancyChannel.getName() + "]§a definido como padrão!");
+        FChatMessages.CHANNEL_DEFINED_AS_YOUR_DEFAULT
+                .addPlaceholder("channel_name", fancyChannel.getName())
+                .send(player);
     }
 }

@@ -1,29 +1,30 @@
-package br.com.finalcraft.finalchat.util;
+package br.com.finalcraft.finalchat.common.util;
 
-import br.com.finalcraft.finalchat.PermissionNodes;
-import org.bukkit.entity.Player;
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
+import br.com.finalcraft.finalchat.common.PermissionNodes;
+import br.com.finalcraft.finalchat.common.messages.FChatMessages;
 
 public class MuteUtil {
 
     public static boolean globalMute = false;
 
-    public static boolean toggleGlobalMute(boolean value){
+    public static boolean toggleGlobalMute(boolean value) {
         return (globalMute = value);
     }
 
-    public static boolean isMuted(Player player){
-        if (globalMute){
+    public static boolean isMuted(FPlayer player) {
+        if (globalMute) {
             return !player.hasPermission(PermissionNodes.MUTE_BYPASS);
         }
         return false;
     }
 
-    public static String getMuteMessage(Player player){
-        if (globalMute && !player.hasPermission(PermissionNodes.MUTE_BYPASS)){
-            return "§c  §l(GlobalMute está ativado!)";
+    /** Why this player is muted, ready to fill the {@code ${reason}} of the muted message. */
+    public static String getMuteMessage(FPlayer player) {
+        if (globalMute && !player.hasPermission(PermissionNodes.MUTE_BYPASS)) {
+            return FChatMessages.GLOBAL_MUTE_REASON.getFancyText(player).getText();
         }
         return "";
     }
 
 }
-

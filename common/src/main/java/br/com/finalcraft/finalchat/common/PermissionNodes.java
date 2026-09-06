@@ -1,4 +1,4 @@
-package br.com.finalcraft.finalchat;
+package br.com.finalcraft.finalchat.common;
 
 public class PermissionNodes {
 

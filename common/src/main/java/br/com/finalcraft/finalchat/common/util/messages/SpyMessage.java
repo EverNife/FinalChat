@@ -1,73 +1,83 @@
-package br.com.finalcraft.finalchat.util.messages;
+package br.com.finalcraft.finalchat.common.util.messages;
 
+import br.com.finalcraft.evernifecore.EverNifeCore;
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.fancytext.FancyFormatter;
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
-import br.com.finalcraft.finalchat.FinalChat;
-import br.com.finalcraft.finalchat.util.FancyTextUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import br.com.finalcraft.evernifecore.util.FCColorUtil;
+import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+/** Staff copies of conversations they were not part of, recoloured per staff member. */
 public class SpyMessage {
 
-    private static Map<Player,String> spyingPlayers = new HashMap<>(); //Player - Color
+    private static final String DEFAULT_COLOR = "§7";
 
-    public static void changeSpyState(Player player, String color, boolean state){
-        spyingPlayers.remove(player);
-        if (state == true){
-            spyingPlayers.put(player, color);
+    //uuid -> the colour that staff member asked for. Keyed by uuid so a player who quits without a
+    //quit event does not keep a live reference around.
+    private static final Map<UUID, String> spyingPlayers = new ConcurrentHashMap<>();
+
+    public static void changeSpyState(FPlayer player, String color, boolean state) {
+        if (state) {
+            spyingPlayers.put(player.getUniqueId(), color == null || color.isEmpty() ? DEFAULT_COLOR : color);
+        } else {
+            spyingPlayers.remove(player.getUniqueId());
         }
     }
 
-    public static boolean isSpying(Player player){
-        return spyingPlayers.containsKey(player);
+    public static boolean isSpying(FPlayer player) {
+        return spyingPlayers.containsKey(player.getUniqueId());
     }
 
-    public static void spyOnThis(List<FancyText> msg, List<Player> allPlayerWhoHeard){
-        if (spyingPlayers.size() == 0){
+    public static void spyOnThis(List<FancyText> msg, List<FPlayer> allPlayerWhoHeard) {
+        if (spyingPlayers.isEmpty()) {
             return;
         }
 
-        HashSet<UUID> allPlayerWhoHeardUUIDs = new HashSet();
+        Set<UUID> allPlayerWhoHeardUUIDs = new HashSet<>();
 
         StringBuilder allPlayerWhoHeardString = new StringBuilder("§7§oThe Eye is Watching Us");
-        for (Player player : allPlayerWhoHeard){
+        for (FPlayer player : allPlayerWhoHeard) {
             allPlayerWhoHeardString.append("\n§7  - §a" + player.getName());
             allPlayerWhoHeardUUIDs.add(player.getUniqueId());
         }
+        String hover = "Jogadores que escutaram essa mensagem: \n " + allPlayerWhoHeardString;
 
-        msg.forEach(fancyText -> {
-            fancyText.setText("§7" + ChatColor.stripColor(fancyText.getText()));
-            fancyText.setHoverText("Jogadores que escutaram essa mensagem: \n " + allPlayerWhoHeardString);
-        });
-
-        String previousColor = "§7";
+        //The colour is what changes per staff member, so the plain text is stripped once and each
+        //recipient gets a formatter built from it. A single shared formatter cannot work: append
+        //COPIES the piece it takes, so recolouring the originals afterwards reaches nothing.
+        List<String> plainPieces = new ArrayList<>(msg.size());
         for (FancyText fancyText : msg) {
-            fancyText.setText(previousColor + ChatColor.stripColor(fancyText.getText()));
+            plainPieces.add(FCColorUtil.stripColor(fancyText.getText()));
         }
 
-        FinalChat.chatLog(FancyTextUtil.textOnly(msg));
-        FancyFormatter formatter = FancyFormatter.of().append(msg.toArray(new FancyText[0]));
-        for (Map.Entry<Player, String> entry : spyingPlayers.entrySet()) {
-            Player staffSpyHearing = entry.getKey();
+        FinalChatBootstrap.chatLog(String.join("", plainPieces));
+
+        for (Map.Entry<UUID, String> entry : spyingPlayers.entrySet()) {
+            if (allPlayerWhoHeardUUIDs.contains(entry.getKey())) {
+                continue;
+            }
+
+            FPlayer staffSpyHearing = EverNifeCore.getPlatform().getPlayer(entry.getKey());
+            if (staffSpyHearing == null || !staffSpyHearing.isOnline()) {
+                continue;
+            }
+
             String staffColor = entry.getValue();
 
-            if (staffSpyHearing.isOnline() == false){
-                continue;
+            FancyFormatter formatter = FancyFormatter.of();
+            for (int i = 0; i < msg.size(); i++) {
+                formatter.append(msg.get(i).copy()
+                        .setText(staffColor + plainPieces.get(i))
+                        .setHover(hover));
             }
-
-            if (allPlayerWhoHeardUUIDs.contains(staffSpyHearing.getUniqueId())){
-                continue;
-            }
-
-            if (!previousColor.equalsIgnoreCase(staffColor)){
-                for (FancyText fancyText : msg) {
-                    fancyText.setText(staffColor + ChatColor.stripColor(fancyText.getText()));
-                }
-                previousColor = staffColor;
-            }
-
             formatter.send(staffSpyHearing);
         }
     }

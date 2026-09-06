@@ -1,23 +1,23 @@
-package br.com.finalcraft.finalchat.commands;
+package br.com.finalcraft.finalchat.common.commands;
 
 
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.argumento.MultiArgumentos;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
 import br.com.finalcraft.evernifecore.commands.finalcmd.custom.ICustomFinalCMD;
 import br.com.finalcraft.evernifecore.commands.finalcmd.custom.contexts.CustomizeContext;
 import br.com.finalcraft.evernifecore.scheduler.FCScheduler;
-import br.com.finalcraft.finalchat.config.data.FancyPlayerData;
-import br.com.finalcraft.finalchat.config.fancychat.FancyChannel;
-import br.com.finalcraft.finalchat.messages.FChatMessages;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.jetbrains.annotations.NotNull;
+import br.com.finalcraft.finalchat.common.config.data.FancyPlayerData;
+import br.com.finalcraft.finalchat.common.config.fancychat.FancyChannel;
+import br.com.finalcraft.finalchat.common.messages.FChatMessages;
+import br.com.finalcraft.finalchat.common.util.messages.PublicMessage;
 
-import java.util.HashSet;
-import java.util.Set;
-
+/**
+ * One instance of this is registered per channel, which is how {@code /global}, {@code /g},
+ * {@code /local} and {@code /l} come out of config.yml: the command declares no label of its own and
+ * {@link #customize} writes the channel's name, alias and permission into it at registration.
+ */
 public class CMDInChannel implements ICustomFinalCMD {
 
     private final FancyChannel fancyChannel;
@@ -27,7 +27,7 @@ public class CMDInChannel implements ICustomFinalCMD {
     }
 
     @Override
-    public void customize(@NotNull CustomizeContext context) {
+    public void customize(CustomizeContext context) {
         context.getFinalCMDData()
                 .setPermission(fancyChannel.getPermission())
                 .setLabels(
@@ -39,20 +39,20 @@ public class CMDInChannel implements ICustomFinalCMD {
     @FinalCMD(
             aliases = ""
     )
-    public void inChannel(Player player, FancyPlayerData playerData, @Arg(name = "[msg]") String message, MultiArgumentos argumentos){
+    public void inChannel(FPlayer player, FancyPlayerData playerData, @Arg("[msg]") String message, MultiArgumentos argumentos) {
 
-        if (message == null){
+        if (message == null) {
             playerData.setLockChannel(fancyChannel);
             FChatMessages.CHANNEL_DEFINED_AS_YOUR_DEFAULT
-                    .addPlaceholder("%channel_name%", fancyChannel.getName())
+                    .addPlaceholder("channel_name", fancyChannel.getName())
                     .send(player);
             return;
         }
 
-        playerData.setTempChannel(fancyChannel);
-
-        Set<Player> onlinePlayer = new HashSet(Bukkit.getOnlinePlayers());
-        AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(true, player, argumentos.joinStringArgs(), onlinePlayer);
-        FCScheduler.runAsync(() -> Bukkit.getServer().getPluginManager().callEvent(event));
+        //Delivered straight to this channel instead of round-tripping through a synthetic chat event:
+        //the channel is known here, so nothing has to be stashed on the player and read back by a
+        //listener - which is also what made two quick messages able to swap channels.
+        String finalMessage = argumentos.joinStringArgs();
+        FCScheduler.runAsync(() -> PublicMessage.sendPublicMessage(player, fancyChannel, finalMessage));
     }
 }

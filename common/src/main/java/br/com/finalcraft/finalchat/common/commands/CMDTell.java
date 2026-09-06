@@ -1,6 +1,8 @@
-package br.com.finalcraft.finalchat.commands;
+package br.com.finalcraft.finalchat.common.commands;
 
 
+import br.com.finalcraft.evernifecore.EverNifeCore;
+import br.com.finalcraft.evernifecore.api.common.player.FPlayer;
 import br.com.finalcraft.evernifecore.argumento.MultiArgumentos;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.Arg;
 import br.com.finalcraft.evernifecore.commands.finalcmd.annotations.FinalCMD;
@@ -8,20 +10,19 @@ import br.com.finalcraft.evernifecore.locale.FCLocale;
 import br.com.finalcraft.evernifecore.locale.LocaleMessage;
 import br.com.finalcraft.evernifecore.locale.LocaleType;
 import br.com.finalcraft.evernifecore.util.FCMessageUtil;
-import br.com.finalcraft.finalchat.config.data.FancyPlayerData;
-import br.com.finalcraft.finalchat.util.messages.PrivateMessage;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import br.com.finalcraft.finalchat.common.config.data.FancyPlayerData;
+import br.com.finalcraft.finalchat.common.platform.ChatPlatformBridge;
+import br.com.finalcraft.finalchat.common.util.messages.PrivateMessage;
 
 public class CMDTell {
 
     @FinalCMD(
-            aliases = {"ftell","tell","whispper","t","w","m","msg","private"}
+            aliases = {"ftell", "tell", "whispper", "t", "w", "m", "msg", "private"}
     )
-    public void tell(Player player, MultiArgumentos argumentos, @Arg(name = "<Player>") Player target, @Arg(name = "<msg>") String message){
+    public void tell(FPlayer player, MultiArgumentos argumentos, @Arg("<Player>") FPlayer target, @Arg("<msg>") String message) {
         message = argumentos.joinStringArgs(1);
 
-        if (!player.canSee(target)){
+        if (!ChatPlatformBridge.get().canSee(player, target)) {
             FCMessageUtil.playerNotOnline(player, argumentos.getStringArg(0));
             return;
         }
@@ -34,13 +35,15 @@ public class CMDTell {
     public static LocaleMessage YOU_DO_NOT_HAVE_ANYONE_TO_ASNWER;
 
     @FinalCMD(
-            aliases = {"reply","responder","r"}
+            aliases = {"reply", "responder", "r"}
     )
-    public void reply(Player player, FancyPlayerData playerData, MultiArgumentos argumentos, @Arg(name = "<msg>") String message){
+    public void reply(FPlayer player, FancyPlayerData playerData, MultiArgumentos argumentos, @Arg("<msg>") String message) {
 
-        Player target = Bukkit.getPlayer(playerData.getLastWhisperer());
+        FPlayer target = playerData.getLastWhisperer() == null
+                ? null
+                : EverNifeCore.getPlatform().getPlayer(playerData.getLastWhisperer());
 
-        if (target == null || !player.canSee(target)){
+        if (target == null || !ChatPlatformBridge.get().canSee(player, target)) {
             YOU_DO_NOT_HAVE_ANYONE_TO_ASNWER.send(player);
             return;
         }

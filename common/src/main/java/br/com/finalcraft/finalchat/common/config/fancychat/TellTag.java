@@ -1,9 +1,9 @@
-package br.com.finalcraft.finalchat.config.fancychat;
+package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
 import br.com.finalcraft.evernifecore.util.FCColorUtil;
-import br.com.finalcraft.finalchat.FinalChat;
-import br.com.finalcraft.finalchat.config.ConfigManager;
+import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 public class TellTag {
 
@@ -20,7 +20,7 @@ public class TellTag {
 
     public static void initialize(){
         TELL_TAG = new TellTag();
-        FinalChat.info("§aFinished Loading TellTag!");
+        FinalChatBootstrap.get().getLog().info("Finished loading the TellTag!");
     }
 
     public TellTag(){
@@ -44,16 +44,16 @@ public class TellTag {
         this.hover_message           = FCColorUtil.colorfy(this.hover_message);
         suggest_command = (!suggest_command.startsWith("/") ? "/" + suggest_command : suggest_command);
 
-        fancyTextSender = new FancyText(sender_format);
-        fancyTextReceiver = new FancyText(receiver_format);
+        fancyTextSender = FancyText.of(sender_format);
+        fancyTextReceiver = FancyText.of(receiver_format);
         if (!this.hover_message.isEmpty()){
-            fancyTextSender.setHoverText(hover_message);
-            fancyTextReceiver.setHoverText(hover_message);
+            fancyTextSender.setHover(hover_message);
+            fancyTextReceiver.setHover(hover_message);
         }
 
         if (!this.suggest_command.isEmpty()) {
-            fancyTextSender.setSuggestCommandAction(suggest_command);
-            fancyTextReceiver.setSuggestCommandAction(suggest_command);
+            fancyTextSender.setClickSuggest(suggest_command);
+            fancyTextReceiver.setClickSuggest(suggest_command);
         }
     }
 

@@ -1,13 +1,18 @@
-package br.com.finalcraft.finalchat.config.fancychat;
+package br.com.finalcraft.finalchat.common.config.fancychat;
 
 import br.com.finalcraft.evernifecore.fancytext.FancyText;
-import br.com.finalcraft.finalchat.FinalChat;
-import br.com.finalcraft.finalchat.config.ConfigManager;
-import org.bukkit.ChatColor;
+import br.com.finalcraft.evernifecore.util.FCColorUtil;
+import br.com.finalcraft.finalchat.common.FinalChatBootstrap;
+import br.com.finalcraft.finalchat.common.config.ConfigManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * One configurable piece of a chat line, as declared under {@code TagFormats.<name>}: the text, its
+ * hover and its click action, plus the optional permission and placeholder condition that decide
+ * whether the piece shows up at all.
+ */
 public class FancyTag {
 
     public String name;
@@ -20,49 +25,49 @@ public class FancyTag {
 
     FancyText fancyText;
 
-    public static Map<String,FancyTag> mapOfFancyTags = new HashMap<String,FancyTag>();
+    public static Map<String, FancyTag> mapOfFancyTags = new HashMap<String, FancyTag>();
 
-    public static void initialize(){
+    public static void initialize() {
         mapOfFancyTags.clear();
 
-        for (String fancyTagName : ConfigManager.getMainConfig().getKeys("TagFormats")){
+        for (String fancyTagName : ConfigManager.getMainConfig().getKeys("TagFormats")) {
             try {
                 FancyTag fancyTag = new FancyTag(fancyTagName);
-                mapOfFancyTags.put(fancyTagName,fancyTag);
-            }catch (Exception e){
-                FinalChat.info("Error trying to read " + fancyTagName + " FancyTag : " + e.getMessage());
+                mapOfFancyTags.put(fancyTagName, fancyTag);
+            } catch (Exception e) {
+                FinalChatBootstrap.get().getLog().warning("Could not read the FancyTag [{}]: {}", fancyTagName, e.getMessage());
             }
         }
 
-        FinalChat.info("§aFinished Loading " + mapOfFancyTags.size() + " FancyTags!");
+        FinalChatBootstrap.get().getLog().info("Finished loading {} FancyTags!", mapOfFancyTags.size());
     }
 
-    public FancyTag(String name){
+    public FancyTag(String name) {
         this.name = name;
-        this.format = ConfigManager.getMainConfig().getString("TagFormats." + name + ".format","");
-        this.permission = ConfigManager.getMainConfig().getString("TagFormats." + name + ".permission","");
-        this.placeholderCondition = ConfigManager.getMainConfig().getString("TagFormats." + name + ".placeholderCondition","");
+        this.format = ConfigManager.getMainConfig().getString("TagFormats." + name + ".format", "");
+        this.permission = ConfigManager.getMainConfig().getString("TagFormats." + name + ".permission", "");
+        this.placeholderCondition = ConfigManager.getMainConfig().getString("TagFormats." + name + ".placeholderCondition", "");
 
         StringBuilder hoverBuilder = new StringBuilder();
-        for (String line : ConfigManager.getMainConfig().getStringList("TagFormats." + name + ".hover-messages")){
+        for (String line : ConfigManager.getMainConfig().getStringList("TagFormats." + name + ".hover-messages")) {
             hoverBuilder.append(line + "\n");
         }
-        if (hoverBuilder.toString().isEmpty()){
+        if (hoverBuilder.toString().isEmpty()) {
             this.hover_message = "";
-        }else {
-            this.hover_message = hoverBuilder.substring(0,hoverBuilder.length() - 1);
+        } else {
+            this.hover_message = hoverBuilder.substring(0, hoverBuilder.length() - 1);
         }
 
-        this.run_command = ConfigManager.getMainConfig().getString("TagFormats." + name + ".run-command","");
-        this.suggest_command = ConfigManager.getMainConfig().getString("TagFormats." + name + ".suggest-command","");
+        this.run_command = ConfigManager.getMainConfig().getString("TagFormats." + name + ".run-command", "");
+        this.suggest_command = ConfigManager.getMainConfig().getString("TagFormats." + name + ".suggest-command", "");
 
-        format          = ChatColor.translateAlternateColorCodes('&',format);
-        hover_message   = ChatColor.translateAlternateColorCodes('&',hover_message);
+        format          = FCColorUtil.colorfy(format);
+        hover_message   = FCColorUtil.colorfy(hover_message);
 
-        fancyText = new FancyText(format);
-        if (!this.hover_message.isEmpty()) fancyText.setHoverText(hover_message);
-        if (!this.run_command.isEmpty()) fancyText.setRunCommandAction(run_command);
-        if (!this.suggest_command.isEmpty()) fancyText.setSuggestCommandAction(suggest_command);
+        fancyText = FancyText.of(format);
+        if (!this.hover_message.isEmpty()) fancyText.setHover(hover_message);
+        if (!this.run_command.isEmpty()) fancyText.setClickCommand(run_command);
+        if (!this.suggest_command.isEmpty()) fancyText.setClickSuggest(suggest_command);
     }
 
     public String getName() {
